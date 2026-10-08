@@ -1,0 +1,19 @@
+Thank you for installing {{ .Chart.Name }}
+
+Release Name:
+{{ .Release.Name }}
+
+Namespace:
+{{ .Release.Namespace }}
+
+To get the resources:
+
+kubectl get all -n {{ .Release.Namespace }}
+
+To check ingress:
+
+kubectl get ingress -n {{ .Release.Namespace }}
+
+To check pods:
+
+kubectl get pods -n {{ .Release.Namespace }}

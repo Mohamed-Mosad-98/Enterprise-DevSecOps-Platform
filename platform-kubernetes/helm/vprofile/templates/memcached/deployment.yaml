@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: {{ include "vprofile.fullname" . }}-memcached
+  labels:
+    {{- include "vprofile.labels" . | nindent 4 }}
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: memcached
+
+  template:
+    metadata:
+      labels:
+        app: memcached
+
+    spec:
+      containers:
+        - name: memcached
+
+          image: "{{ .Values.memcached.image.repository }}:{{ .Values.memcached.image.tag }}"
+          imagePullPolicy: IfNotPresent
+
+          args:
+            - "-m"
+            - "64"
+
+          ports:
+            - containerPort: {{ .Values.memcached.service.port }}
+
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.memcached.service.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.memcached.service.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 20
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+
+            limits:
+              cpu: 250m
+              memory: 256Mi

@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: {{ include "vprofile.fullname" . }}-rabbitmq
+  labels:
+    {{- include "vprofile.labels" . | nindent 4 }}
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: rabbitmq
+
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+
+    spec:
+      containers:
+        - name: rabbitmq
+
+          image: "{{ .Values.rabbitmq.image.repository }}:{{ .Values.rabbitmq.image.tag }}"
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - containerPort: {{ .Values.rabbitmq.service.amqpPort }}
+            - containerPort: {{ .Values.rabbitmq.service.managementPort }}
+
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              value: "{{ .Values.rabbitmq.username }}"
+
+            - name: RABBITMQ_DEFAULT_PASS
+              value: "{{ .Values.rabbitmq.password }}"
+
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.rabbitmq.service.amqpPort }}
+            initialDelaySeconds: 20
+            periodSeconds: 10
+
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.rabbitmq.service.amqpPort }}
+            initialDelaySeconds: 40
+            periodSeconds: 20
+
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+
+            limits:
+              cpu: 500m
+              memory: 512Mi

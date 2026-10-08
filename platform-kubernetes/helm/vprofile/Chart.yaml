@@ -1,0 +1,19 @@
+apiVersion: v2
+name: vprofile
+description: Enterprise Helm Chart for the vProfile Java Application
+type: application
+
+version: 0.1.0
+appVersion: "2.0.0"
+
+keywords:
+  - java
+  - spring
+  - tomcat
+  - enterprise
+  - kubernetes
+
+home: https://github.com/Mohamed-Mosad-98
+
+maintainers:
+  - name: Mohamed Mosad

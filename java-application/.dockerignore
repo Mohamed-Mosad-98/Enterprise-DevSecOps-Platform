@@ -1,0 +1,17 @@
+.git
+.gitignore
+
+target
+
+.idea
+.vscode
+
+README.md
+
+*.iml
+
+Dockerfile
+
+helm
+
+terraform

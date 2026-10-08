@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: {{ include "vprofile.fullname" . }}
+  labels:
+    {{- include "vprofile.labels" . | nindent 4 }}
+
+spec:
+  replicas: {{ .Values.replicaCount }}
+
+  selector:
+    matchLabels:
+      {{- include "vprofile.selectorLabels" . | nindent 6 }}
+
+  template:
+    metadata:
+      labels:
+        {{- include "vprofile.selectorLabels" . | nindent 8 }}
+
+    spec:
+      serviceAccountName: {{ include "vprofile.serviceAccountName" . }}
+
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+
+          envFrom:
+            - secretRef:
+                name: {{ include "vprofile.fullname" . }}-secret
+
+          volumeMounts:
+            - name: app-config
+              mountPath: /usr/local/tomcat/webapps/ROOT/WEB-INF/classes/application.properties
+              subPath: application.properties
+
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 5
+
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 90
+            periodSeconds: 20
+            timeoutSeconds: 2
+            failureThreshold: 5
+
+      volumes:
+        - name: app-config
+          configMap:
+            name: {{ include "vprofile.fullname" . }}-config

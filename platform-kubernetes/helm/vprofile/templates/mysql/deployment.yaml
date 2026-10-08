@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: {{ include "vprofile.fullname" . }}-mysql
+  labels:
+    {{- include "vprofile.labels" . | nindent 4 }}
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: mysql
+
+  template:
+    metadata:
+      labels:
+        app: mysql
+
+    spec:
+      containers:
+        - name: mysql
+
+          image: mysql:8.0
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - containerPort: 3306
+
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: vprodbpass
+
+            - name: MYSQL_DATABASE
+              value: accounts
+
+          volumeMounts:
+            - name: mysql-data
+              mountPath: /var/lib/mysql
+
+            - name: mysql-initdb
+              mountPath: /docker-entrypoint-initdb.d/db_backup.sql
+              subPath: db_backup.sql
+
+          readinessProbe:
+            tcpSocket:
+              port: 3306
+
+            initialDelaySeconds: 20
+            periodSeconds: 10
+
+          livenessProbe:
+            tcpSocket:
+              port: 3306
+
+            initialDelaySeconds: 40
+            periodSeconds: 20
+
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+
+            limits:
+              cpu: 500m
+              memory: 1Gi
+
+      volumes:
+        - name: mysql-initdb
+          configMap:
+            name: {{ include "vprofile.fullname" . }}-mysql-initdb
+
+        - name: mysql-data
+          persistentVolumeClaim:
+            claimName: {{ include "vprofile.fullname" . }}-mysql-pvc

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+
+metadata:
+  name: {{ include "vprofile.fullname" . }}-mysql-pvc
+  labels:
+    {{- include "vprofile.labels" . | nindent 4 }}
+
+spec:
+  storageClassName: gp2
+
+  accessModes:
+    - ReadWriteOnce
+
+  resources:
+    requests:
+      storage: {{ .Values.mysql.persistence.size }}

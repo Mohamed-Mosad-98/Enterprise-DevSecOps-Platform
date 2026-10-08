@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: {{ include "vprofile.fullname" . }}-mysql-initdb
+  labels:
+    {{- include "vprofile.labels" . | nindent 4 }}
+
+data:
+  db_backup.sql: |-
+{{ .Files.Get "files/db_backup.sql" | indent 4 }}
