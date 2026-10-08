@@ -8,7 +8,8 @@ The project demonstrates an end-to-end cloud-native workflow covering infrastruc
 
 ## Architecture
 
-![Uploading Cloud DevSecOps pipeline architecture diagram.png…]()
+<img width="1536" height="1024" alt="Cloud DevSecOps pipeline architecture diagram" src="https://github.com/user-attachments/assets/e640a56b-94a3-4ee4-ba68-825eab7a2f94" />
+
 
 
 
